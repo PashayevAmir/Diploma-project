@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" charset="UTF-8" content="width=device-width, initial-scale=1.0"/>
+		<title>Match-3 Game Project</title>
+		<link rel="stylesheet" href="rsc/style.css" />
+		<script src="rsc/game.js"></script>
+	</head>
+	<body>	
+		<div id="gameContainer">	
+			<div id="gameui">
+				<h2>Score: <span id="score">0</span></h2>
+				<span>
+					<label>Choose game area layout:</label>
+					<select id="layouttype" name="layoutselect">
+						<option value="4x4">4x4</option>
+						<option value="5x6">5x5</option>
+						<option value="6x6">6x6</option>
+					  </select>
+				</span>
+				<span>
+				<p><button id="gamestart" onclick="startGame()">Start the Game</button></p>
+				<p><button id="areareassemble" onclick="reassembleArea()" disabled>Reassemble Area</button></p>
+			</div>		
+		</div>
+	</body>
+</html>
