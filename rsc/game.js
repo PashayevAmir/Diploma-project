@@ -184,7 +184,7 @@ var scorevalue = 0;
 			function checkCurrentPosition(){
 			
 				if (gameElements.find(gamelem => (gamelem.Xdesr != gamelem.x || gamelem.Ydesr != gamelem.y))){
-					setTimeout(moveElements, 10);
+					setTimeout(moveElements, 5);
 				}
 				else {
 					if(relocation == true){
