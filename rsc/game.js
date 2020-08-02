@@ -4,6 +4,8 @@ var scorevalue = 0;
 			
 			var elementsToDestroy = [];
 			
+			var selectedItem = [];
+			
 			var savedPosition = {x: "none", y: "none"};			
 			var newPosition = {x: 0, y: 0};
 			
@@ -12,7 +14,13 @@ var scorevalue = 0;
 			
 			let colors = ["pink","green","red","blue","gray"];
 			
-			var posX = 70;
+			elementWidth = 30;
+			elementHeight = 30;
+			
+			areaWidth = 480;
+			areaHeight = 940;
+			
+			var posX;
 			var posY = 70;
 			
 			var gamePosition = 460;
@@ -25,14 +33,27 @@ var scorevalue = 0;
 				let x = 0;
 				let y = 1;
 				
+				var XposMod;
+				var YposMod;
+				
 				lines = Number(document.getElementById("layouttype").value[0]);
 				members = Number(document.getElementById("layouttype").value[0]);
+				
+				switch (members) {
+					case 4: XposMod = 1; break;
+					case 5:
+					case 6: XposMod = 1.5; break;
+				}	
+				
+				posX = areaWidth/members - elementWidth/XposMod;
 			
 				for (r=1;r<=lines*members;r++){
 					x++;
 					if (x>members) { x = 1; y++; }
-					gameElements.push(new component(30, 30, colors[Math.floor(Math.random() * colors.length)], posX*x, posY*y+gamePosition));
+					gameElements.push(new component(elementWidth, elementHeight, colors[Math.floor(Math.random() * colors.length)], posX*x, posY*y+gamePosition));
 				}
+				
+				selectedItem.push(new component(elementWidth, elementHeight, colors[Math.floor(Math.random() * colors.length)], 70, 70));
 				
 				document.getElementById("layouttype").disabled = true;
 				document.getElementById("gamestart").disabled = true;
@@ -94,15 +115,22 @@ var scorevalue = 0;
 			var myGameArea = {
 				canvas : document.createElement("canvas"),
 				start : function() {
-					this.canvas.width = 480;
-					this.canvas.height = 940;
+					this.canvas.width = areaWidth;
+					this.canvas.height = areaHeight;
 					this.context = this.canvas.getContext("2d");
 					document.getElementById("gameContainer").insertBefore(this.canvas, document.getElementById("gameContainer").childNodes[0]);
 					updateGameArea();
-					window.addEventListener('click', function (e) {
+					
+					window.addEventListener('mousedown', function (e) {
 							myGameArea.x = e.pageX ;
 							myGameArea.y = e.pageY;							
-							clickOnArea();
+							clickOnGameArea();
+					});
+					
+					window.addEventListener('mouseup', function (e) {
+							myGameArea.x = e.pageX;
+							myGameArea.y = e.pageY;							
+							releaseOnGameArea();
 					});
 				}, 
 				clear : function(){
@@ -428,10 +456,10 @@ var scorevalue = 0;
 				}
 			}
 		
-					
-			function clickOnArea(){
+			function clickOnGameArea(){
 				if (myGameArea.x && myGameArea.y && clickedStatus == false) {
-						if (gameElements.find(celem => celem.clicked())) {
+					
+					if (gameElements.find(celem => celem.clicked())) {
 							
 							let clickedElem = gameElements.find(celem => celem.clicked());
 							//console.log("clicked on "+ clickedElem.x + " " + clickedElem.y + " " + clickedElem.color);													
@@ -442,8 +470,18 @@ var scorevalue = 0;
 								clickedElem.outline = "black";
 								updateGameArea();								
 							}
-							else {
-								if (
+					}					
+				}				
+			}
+			
+			function releaseOnGameArea(){
+				if (myGameArea.x && myGameArea.y && clickedStatus == false) {
+					
+					if (gameElements.find(celem => celem.clicked())) {
+						
+						let clickedElem = gameElements.find(celem => celem.clicked());
+						
+						if ( 
 									((clickedElem.x == savedPosition.x + posX||clickedElem.x == savedPosition.x - posX) && clickedElem.y == savedPosition.y)
 									||
 									((clickedElem.y == savedPosition.y + posY||clickedElem.y == savedPosition.y - posY) && clickedElem.x == savedPosition.x)
@@ -492,17 +530,26 @@ var scorevalue = 0;
 								else { 
 									//console.log("Bad spot");
 									clickedStatus = false;
-									gameElements.find(celem => celem.clicked()).outline = "transparent";
+									gameElements.find(celem => celem.outline == "black").outline = "transparent";
 									updateGameArea();
 								}
 								
 								checkCurrentPosition();	
-							}
-							
-						} 
+						
+					}
+					else{
+						//console.log("Wrong spot");
+						savedPosition.x = "none";
+						savedPosition.y = "none";
+						
+						if (gameElements.find(selelem => selelem.outline == "black")){
+							gameElements.find(selelem => selelem.outline == "black").outline = "transparent";
+							updateGameArea();
+						}
+						
+					}
 				}
-			
-			}
+			}	
 			
 			function updateGameArea() {
 				myGameArea.clear();			
